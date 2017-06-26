@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sixties Gifs</title>
+</head>
+<body>
+
+<h1>Click a button to generate gifs!</h1>
+
+<div id="search-buttons"></div>
+
+<div id="gif-view"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+	var topics = ["The Beatles", "Peace", "Hippie", "Feminism", "Gloria Steinem", "Summer of Love"];
+
+      // displayMovieInfo function re-renders the HTML to display the appropriate content
+      function displayGifInfo() {
+
+        var sixties = $(this).attr("data-name");
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q="+sixties+"&api_key=dc6zaTOxFJmzC&limit=10";
+
+        // Creates AJAX call for the specific movie button being clicked
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).done(function(response) {
+
+          // YOUR CODE GOES HERE!!!
+          var gifDiv = $('<div class="gifHolder">')
+          
+          var rating = response.Rated;
+          var parRating = $('<p>').text("Gif rating: "+rating);
+          gifDiv.append(parRating);
+
+          var gifURL = response.Poster;
+          var gif = $("<img>").attr("src", gifURL);
+          gifDiv.append(gif);
+
+
+          $("#gif-view").prepend(gifDiv);
+        });
+
+      }
+
+      // Function for displaying movie data
+      function renderButtons() {
+
+        // Deletes the movies prior to adding new movies
+        // (this is necessary otherwise you will have repeat buttons)
+        $("#search-buttons").empty();
+
+        // Loops through the array of movies
+        for (var i = 0; i < topics.length; i++) {
+
+          var a = $("<button>");
+          // Adds a class of movie to our button
+          a.addClass("gifHolder");
+          // Added a data-attribute
+          a.attr("data-name", topics[i]);
+          // Provided the initial button text
+          a.text(topics[i]);
+          // Added the button to the buttons-view div
+          $("#search-buttons").append(a);
+        }
+      }
+
+      // This function handles events where the add movie button is clicked
+      $("#add-movie").on("click", function(event) {
+        event.preventDefault();
+        // This line of code will grab the input from the textbox
+        var gifHolder = $("#gif-view").val().trim();
+
+        // The movie from the textbox is then added to our array
+        topics.push(gifHolder);
+
+        // Calling renderButtons which handles the processing of our movie array
+        renderButtons();
+
+      });
+
+      // Adding click event listeners to all elements with a class of "movie"
+      $(document).on("click", ".gifHolder", displayGifInfo);
+
+      // Calling the renderButtons function to display the intial buttons
+      renderButtons();
+</script>
+
+<style type="text/css"></style>
+
+</body>
+</html>
