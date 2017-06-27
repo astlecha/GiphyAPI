@@ -17,18 +17,7 @@
   </div>
 
   <div class="row">
-    <div class="col-sm-9">
-
-<button type="button" class="btn btn-primary" data-name="hippies">Hippies</button>
-<button type="button" class="btn btn-primary" data-name="sixties">Sixties</button>
-<button type="button" class="btn btn-primary" data-name="1967">1967</button>
-<button type="button" class="btn btn-primary" data-name="psychadelic">Psychadelic</button>
-<button type="button" class="btn btn-primary" data-name="peace">Peace</button>
-<button type="button" class="btn btn-primary" data-name="the-beatles">The Beatles</button>
-<button type="button" class="btn btn-primary" data-name="yellow-submarine">Yellow Submarine</button>
-<button type="button" class="btn btn-primary" data-name="twiggy">Twiggy</button>
-<button type="button" class="btn btn-primary" data-name="jackie+kennedy">Jackie Kennedy</button>
-<button type="button" class="btn btn-primary" data-name="jane-fonda">Jane Fonda</button>
+    <div id ="button-holder" class="col-sm-9">
   </div>
 
     <div class="col-sm-3">
@@ -36,19 +25,22 @@
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search">
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default" id="submitButton">Submit</button>
       </form>
     </div>
 
   </div>
 
-<div class="row">
-  <div class="col-sm-12">
-    <div id="gifs-appear-here"></div>
+  <div class="row">
+    <div id="gifs-appear-here">
+      <div class="col-sm-4"></div>
+      <div class="col-sm-4"></div>
+      <div class="col-sm-4"></div>
+    </div>
   </div>
 </div>
 
-</div>
+
 
 <style type="text/css">
 #gifs-appear-here {
@@ -56,22 +48,55 @@
 }
 
 .btn.btn-primary{
-  margin-bottom: 6px;
+  margin:7px;
 }
-
 </style>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript">
 
-//button click function
+var buttonArray = ["Hippies", "Sixties", "1967", "Psychadelic", "Peace", "The Beatles", "Yellow Submarine", "Twiggy", "Jackie Kennedy", "Jane Fonda"];
+
+      //Renders buttons in button div.
+      function renderButtons() {
+
+        $("#button-holder").empty();
+
+        // Loops through the array of movies.
+        for (var i = 0; i < buttonArray.length; i++) {
+          var a = $("<button>");
+
+          // Adds a class
+          a.addClass("btn btn-primary");
+          a.attr("type", "button");
+          a.attr("data-name", buttonArray[i]);
+          a.text(buttonArray[i]);
+
+          // Adds the button to the HTML
+          $("#button-holder").append(a);
+        }
+      }
+
+      $("#submitButton").on("click", function(event) {
+        event.preventDefault();
+
+        var searchItem = $(".form-control").val();
+        buttonArray.push(searchItem);
+        renderButtons();
+      });
+
+      //Calls the renderButtons function to display the list of gifs
+      renderButtons();
+
+
+//Calls function on button click
 	$("button").on("click", function() {
 	  var sixties = $(this).attr("data-name");
 	  var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-	    sixties + "&api_key=cb636aed6e5a43abb386601e0c8705d5";
+	    sixties + "&api_key=cb636aed6e5a43abb386601e0c8705d5&limit=10";
 	
-    //call the query
+    //calls the query
     	$.ajax({
         	url: queryURL,
         	method: "GET"
@@ -80,20 +105,26 @@
          	console.log(response);
             var results = response.data;
 
-    //loop through data
+    //Loops through data
         for (var i = 0; i < results.length; i++) {
 
+            //Makes div for each item
             var sixtiesDiv = $("<div>");
             
+            //Includes the rating
             var p = $("<p>")
                 var rating = results[i].rating;
                 p.text("Rating: "+rating);
 
+            //Includes the gif
             var sixtiesGif = $("<img>");
               sixtiesGif.attr("src", results[i].images.fixed_height.url);
-              sixtiesGif.addClass("gif");
+              sixtiesGif.attr("data-still", results[i].images.fixed_height_still.url);
+              sixtiesGif.attr("data-animate", results[i].images.fixed_height.url )
+              sixtiesGif.attr("data-state", "animate");
+              sixtiesGif.attr("class", "gif");
 
-
+            //Puts gif and rating inside div.
             sixtiesDiv.prepend(p);
             sixtiesDiv.prepend(sixtiesGif);
 
@@ -101,18 +132,17 @@
 
             };
 
-      });
+//When we click on the gif itself...
+    $(".gif").on("click", function() {
 
-           $(".gif").on("click", function() {
-      // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+//Gets or sets the value of any attribute on our HTML element
       var state = $(this).attr("data-state");
       var animate = $(this).attr("data-animate")
       var still = $(this).attr("src", $(this).attr("data-still"));
 
       console.log(still)
-      // If the clicked image's state is still, update its src attribute to what its data-animate value is.
-      // Then, set the image's data-state to animate
-      // Else set src to the data-still value
+
+//If the clicked image's state is still, animate it.
           if (state === "still") {
             $(this).attr("src", animate );
             $(this).attr("data-state", "animate");
@@ -120,9 +150,11 @@
             $(this).attr("src", $(this).attr("data-still"));
             $(this).attr("data-state", "still");
           };
-      }
-    });
+      });
 
+  });
+
+})
 
 </script>
 
