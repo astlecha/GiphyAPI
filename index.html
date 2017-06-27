@@ -1,93 +1,130 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Sixties Gifs</title>
+  <meta charset="utf-8">
+  <title>Sixties Gifs</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
+
 <body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="page-header">
+        <h1>Welcome to the Sixties</h1>
+      </div>
+    </div>
+  </div>
 
-<h1>Click a button to generate gifs!</h1>
+  <div class="row">
+    <div class="col-sm-9">
 
-<div id="search-buttons"></div>
+<button type="button" class="btn btn-primary" data-name="hippies">Hippies</button>
+<button type="button" class="btn btn-primary" data-name="sixties">Sixties</button>
+<button type="button" class="btn btn-primary" data-name="1967">1967</button>
+<button type="button" class="btn btn-primary" data-name="psychadelic">Psychadelic</button>
+<button type="button" class="btn btn-primary" data-name="peace">Peace</button>
+<button type="button" class="btn btn-primary" data-name="the-beatles">The Beatles</button>
+<button type="button" class="btn btn-primary" data-name="yellow-submarine">Yellow Submarine</button>
+<button type="button" class="btn btn-primary" data-name="twiggy">Twiggy</button>
+<button type="button" class="btn btn-primary" data-name="jackie+kennedy">Jackie Kennedy</button>
+<button type="button" class="btn btn-primary" data-name="jane-fonda">Jane Fonda</button>
+  </div>
 
-<div id="gif-view"></div>
+    <div class="col-sm-3">
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+    </div>
+
+  </div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <div id="gifs-appear-here"></div>
+  </div>
+</div>
+
+</div>
+
+<style type="text/css">
+#gifs-appear-here {
+  padding: 10px;
+}
+
+.btn.btn-primary{
+  margin-bottom: 6px;
+}
+
+</style>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript">
-	var topics = ["The Beatles", "Peace", "Hippie", "Feminism", "Gloria Steinem", "Summer of Love"];
 
-      // displayMovieInfo function re-renders the HTML to display the appropriate content
-      function displayGifInfo() {
+//button click function
+	$("button").on("click", function() {
+	  var sixties = $(this).attr("data-name");
+	  var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+	    sixties + "&api_key=cb636aed6e5a43abb386601e0c8705d5";
+	
+    //call the query
+    	$.ajax({
+        	url: queryURL,
+        	method: "GET"
+    	}).done(function(response) {
 
-        var sixties = $(this).attr("data-name");
-        var queryURL = "http://api.giphy.com/v1/gifs/search?q="+sixties+"&api_key=dc6zaTOxFJmzC&limit=10";
+         	console.log(response);
+            var results = response.data;
 
-        // Creates AJAX call for the specific movie button being clicked
-        $.ajax({
-          url: queryURL,
-          method: "GET"
-        }).done(function(response) {
+    //loop through data
+        for (var i = 0; i < results.length; i++) {
 
-          // YOUR CODE GOES HERE!!!
-          var gifDiv = $('<div class="gifHolder">')
-          
-          var rating = response.Rated;
-          var parRating = $('<p>').text("Gif rating: "+rating);
-          gifDiv.append(parRating);
+            var sixtiesDiv = $("<div>");
+            
+            var p = $("<p>")
+                var rating = results[i].rating;
+                p.text("Rating: "+rating);
 
-          var gifURL = response.Poster;
-          var gif = $("<img>").attr("src", gifURL);
-          gifDiv.append(gif);
+            var sixtiesGif = $("<img>");
+              sixtiesGif.attr("src", results[i].images.fixed_height.url);
+              sixtiesGif.addClass("gif");
 
 
-          $("#gif-view").prepend(gifDiv);
-        });
+            sixtiesDiv.prepend(p);
+            sixtiesDiv.prepend(sixtiesGif);
 
-      }
+              $("#gifs-appear-here").prepend(sixtiesDiv);
 
-      // Function for displaying movie data
-      function renderButtons() {
-
-        // Deletes the movies prior to adding new movies
-        // (this is necessary otherwise you will have repeat buttons)
-        $("#search-buttons").empty();
-
-        // Loops through the array of movies
-        for (var i = 0; i < topics.length; i++) {
-
-          var a = $("<button>");
-          // Adds a class of movie to our button
-          a.addClass("gifHolder");
-          // Added a data-attribute
-          a.attr("data-name", topics[i]);
-          // Provided the initial button text
-          a.text(topics[i]);
-          // Added the button to the buttons-view div
-          $("#search-buttons").append(a);
-        }
-      }
-
-      // This function handles events where the add movie button is clicked
-      $("#add-movie").on("click", function(event) {
-        event.preventDefault();
-        // This line of code will grab the input from the textbox
-        var gifHolder = $("#gif-view").val().trim();
-
-        // The movie from the textbox is then added to our array
-        topics.push(gifHolder);
-
-        // Calling renderButtons which handles the processing of our movie array
-        renderButtons();
+            };
 
       });
 
-      // Adding click event listeners to all elements with a class of "movie"
-      $(document).on("click", ".gifHolder", displayGifInfo);
+           $(".gif").on("click", function() {
+      // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+      var state = $(this).attr("data-state");
+      var animate = $(this).attr("data-animate")
+      var still = $(this).attr("src", $(this).attr("data-still"));
 
-      // Calling the renderButtons function to display the intial buttons
-      renderButtons();
+      console.log(still)
+      // If the clicked image's state is still, update its src attribute to what its data-animate value is.
+      // Then, set the image's data-state to animate
+      // Else set src to the data-still value
+          if (state === "still") {
+            $(this).attr("src", animate );
+            $(this).attr("data-state", "animate");
+          } else {
+            $(this).attr("src", $(this).attr("data-still"));
+            $(this).attr("data-state", "still");
+          };
+      }
+    });
+
+
 </script>
-
-<style type="text/css"></style>
 
 </body>
 </html>
