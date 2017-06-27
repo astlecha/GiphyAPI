@@ -33,7 +33,9 @@
 
   <div class="row">
     <div id="gifs-appear-here">
-      <div class="col-sm-4"></div>
+      <div class="col-sm-4">
+        
+      </div>
       <div class="col-sm-4"></div>
       <div class="col-sm-4"></div>
     </div>
@@ -50,6 +52,12 @@
 .btn.btn-primary{
   margin:7px;
 }
+
+.sixtiesDiv {
+  float: left;
+  padding: 5px;
+}
+
 </style>
 
 
@@ -108,8 +116,11 @@ var buttonArray = ["Hippies", "Sixties", "1967", "Psychadelic", "Peace", "The Be
     //Loops through data
         for (var i = 0; i < results.length; i++) {
 
+            // sixtiesDivArray=[];
+
             //Makes div for each item
             var sixtiesDiv = $("<div>");
+            sixtiesDiv.attr("class", "sixtiesDiv");
             
             //Includes the rating
             var p = $("<p>")
@@ -128,9 +139,11 @@ var buttonArray = ["Hippies", "Sixties", "1967", "Psychadelic", "Peace", "The Be
             sixtiesDiv.prepend(p);
             sixtiesDiv.prepend(sixtiesGif);
 
-              $("#gifs-appear-here").prepend(sixtiesDiv);
-
             };
+
+            // sixtiesDivArray.push(sixtiesDiv);
+            // randomDivSelect= Math.floor(Math.random()*sixtiesDivArray.length);
+            $("#gifs-appear-here").prepend(sixtiesDiv);
 
 //When we click on the gif itself...
     $(".gif").on("click", function() {
